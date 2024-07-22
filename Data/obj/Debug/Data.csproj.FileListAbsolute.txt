@@ -1,0 +1,9 @@
+C:\Users\Aleja\source\repos\SolRFC\Data\bin\Debug\Data.dll
+C:\Users\Aleja\source\repos\SolRFC\Data\bin\Debug\Data.pdb
+C:\Users\Aleja\source\repos\SolRFC\Data\bin\Debug\Entities.dll
+C:\Users\Aleja\source\repos\SolRFC\Data\bin\Debug\Entities.pdb
+C:\Users\Aleja\source\repos\SolRFC\Data\obj\Debug\Data.csproj.AssemblyReference.cache
+C:\Users\Aleja\source\repos\SolRFC\Data\obj\Debug\Data.csproj.CoreCompileInputs.cache
+C:\Users\Aleja\source\repos\SolRFC\Data\obj\Debug\Data.csproj.Up2Date
+C:\Users\Aleja\source\repos\SolRFC\Data\obj\Debug\Data.dll
+C:\Users\Aleja\source\repos\SolRFC\Data\obj\Debug\Data.pdb

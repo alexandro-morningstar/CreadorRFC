@@ -1,0 +1,38 @@
+CREATE DATABASE RFCDB;
+
+USE RFCDB;
+
+CREATE TABLE Users (
+	idRFC INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	paternalSurname VARCHAR(100) NOT NULL,
+	maternalSurname VARCHAR(100) NOT NULL,
+	birthDate DATETIME NOT NULL,
+	rfc VARCHAR(50) NULL
+)
+
+CREATE PROCEDURE add_user
+	@name VARCHAR(100), @paternalsurname VARCHAR(100), @maternalsurname VARCHAR(100), @birthdate DATETIME, @rfc VARCHAR(50)
+	AS
+	BEGIN
+		INSERT INTO Users(name,paternalSurname,maternalSurname,birthDate,rfc)
+		VALUES (@name,@paternalsurname,@maternalsurname,@birthdate,@rfc);
+	END;
+
+ALTER PROCEDURE add_user
+	@name VARCHAR(100), @paternalsurname VARCHAR(100), @maternalsurname VARCHAR(100), @birthdate DATE, @rfc VARCHAR(50)
+	AS
+	BEGIN
+		INSERT INTO Users(name,paternalSurname,maternalSurname,birthDate,rfc)
+		VALUES (@name,@paternalsurname,@maternalsurname,@birthdate,@rfc);
+	END;
+
+CREATE PROCEDURE get_all_users
+AS
+BEGIN
+SELECT idRFC,name,paternalSurname,maternalSurname,birthDate,rfc FROM Users;
+END;
+
+EXECUTE add_user @name='SINUHE ALEJANDRO',@paternalsurname='GOMEZ',@maternalsurname='HERNANDEZ',@birthdate='1998-06-28',@rfc='GOHS980628';
+
+EXECUTE get_all_users;
