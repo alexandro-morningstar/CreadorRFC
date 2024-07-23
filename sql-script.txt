@@ -10,6 +10,8 @@ CREATE TABLE Users (
 	birthDate DATETIME NOT NULL,
 	rfc VARCHAR(50) NULL
 )
+-- MODIFICAR TIPO DE DATO
+ALTER TABLE Users ALTER COLUMN maternalSurname VARCHAR(100) NULL;
 
 CREATE PROCEDURE add_user
 	@name VARCHAR(100), @paternalsurname VARCHAR(100), @maternalsurname VARCHAR(100), @birthdate DATETIME, @rfc VARCHAR(50)
@@ -20,7 +22,7 @@ CREATE PROCEDURE add_user
 	END;
 
 ALTER PROCEDURE add_user
-	@name VARCHAR(100), @paternalsurname VARCHAR(100), @maternalsurname VARCHAR(100), @birthdate DATE, @rfc VARCHAR(50)
+	@name VARCHAR(100), @paternalsurname VARCHAR(100), @maternalsurname VARCHAR(100) NULL, @birthdate DATE, @rfc VARCHAR(50)
 	AS
 	BEGIN
 		INSERT INTO Users(name,paternalSurname,maternalSurname,birthDate,rfc)
@@ -33,6 +35,6 @@ BEGIN
 SELECT idRFC,name,paternalSurname,maternalSurname,birthDate,rfc FROM Users;
 END;
 
-EXECUTE add_user @name='SINUHE ALEJANDRO',@paternalsurname='GOMEZ',@maternalsurname='HERNANDEZ',@birthdate='1998-06-28',@rfc='GOHS980628';
+EXECUTE add_user @name='SINUHE ALEJANDRO',@paternalsurname='GOMEZ',@maternalsurname='',@birthdate='1998-06-28',@rfc='GOHS980628';
 
 EXECUTE get_all_users;

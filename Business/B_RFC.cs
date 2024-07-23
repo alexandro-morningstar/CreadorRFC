@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,33 +11,204 @@ namespace Business
 {
     public class B_RFC
     {
+        List<char> vocals = new List<char> { 'A', 'E', 'I', 'O', 'U' }; //Lista de vocales para comparar existencia
+        List<char> forbiddenVocals = new List<char> { 'Á', 'É', 'Í', 'Ó', 'Ú' }; //Lista de vocales prohibidas (con acento)
+        List<string> forbiddenFirstNames = new List<string> { "MARIA", "MA", "MA.", "JOSE", "J", "J." }; //Lista de primeros nombres prohibidos
+        Dictionary<string, string> forbiddenWords = new Dictionary<string, string> //Diccionario de palabras prohibidas formadas en la parte alfabetica del RFC
+        {
+            { "BUEI","BUEX" },{ "CACA","CACX" },{ "CAGA","CAGX" },{ "CAKA","CAKX" },{ "COGE","COGX" },
+            { "COJE","COJX" },{ "COJO","COJX" },{ "FETO","FETX" },{ "JOTO","JOTX" },{ "KACO","KACX" },
+            { "KOJO","KOJX" },{ "KULO","KULX" },{ "MAMO","MAMX" },{ "MEAS","MEAX" },{ "MION","MIOX" },
+            { "MULA","MULX" },{ "PEDO","PEDX" },{ "PUTA","PUTX" },{ "QULO","QULX" },{ "BUEY","BUEX" },
+            { "CACO","CACX" },{ "CAGO","CAGX" },{ "CAKO","CAKX" },{ "COJA","COJX" },{ "COJI","COJX" },
+            { "CULO","CULX" },{ "GUEY","GUEX" },{ "KACA","KACX" },{ "KAGA","KAGX" },{ "KOGE","KOGX" },
+            { "KAKA","KAKX" },{ "MAME","MAMX" },{ "MEAR","MEAX" },{ "MEON","MEOX" },{ "MOCO","MOCX" },
+            { "PEDA","PEDX" },{ "PENE","PENX" },{ "PUTO","PUTX" },{ "RATA","RATX" }
+        };
+
         public void Create(E_RFC user)
         {
             D_RFC userCreator = new D_RFC();
 
-            string rfc = GenerateRFC(user);
+            try
+            {
+                string rfc = GenerateRFC(user);
+                userCreator.CreateUser(user, rfc);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
         }
 
         public string GenerateRFC(E_RFC user)
         {
-            string paternalSurname = user.PaternalSurname;
+            string paternalSurname = user.PaternalSurname.ToUpper(); //Desde aqui convertimos todo a mayusculas para facilitar la manipulación de datos (comparaciones y asginaciones)
             string maternalSurname = user.MaternalSurname;
-            string names = user.Name;
+            if (user.MaternalSurname != null)
+            {
+                maternalSurname = user.MaternalSurname.ToUpper();
+            }
+            string name = user.Name.ToUpper();
             string birthDate = user.BirthDate.ToString("yy-MM-dd");
 
             //TRATAR LOS DATOS PARA GENERAR EL RFC
             // Un metodo para sacar cada parte del RFC
-            string firstPosition = pSurnameLetters(paternalSurname); //Hacer todos esos metodos
-            string secondPosition = mSurnameLetters(maternalSurname);
-            string thirdPosition = nameLetters(names); //Si son dos nombres, partir la cadena en subcadenas, split por espacios
-            int fourthPosition = birthdateNumbers(birthDate);
+            string firstPosition = pSurnameLetters(paternalSurname); //Primer apellido: primer letra y primer vocal interna.
+            string secondPosition = mSurnameLetter(maternalSurname); //Segundo apellido: primer letra
+            string thirdPosition = NameLetters(name); //Si son dos nombres, partir la cadena en subcadenas, split por espacios
+            string fourthPosition = BirthdateNumbers(birthDate);
 
-            string rfc = $"{firstPosition}{secondPosition}{thirdPosition}{Convert.ToString(fourthPosition)}";
+            // Evaluar la parte alfabetica del RFC a fin de evitar palabras inconvenientes
+            string toClean = $"{firstPosition}{secondPosition}{thirdPosition}";
+            string cleaned = Cleaner(toClean);
 
-            // Luego evaluar el RFC entero con otro metodo
+            //Armar RFC completo
+            string rfc = $"{cleaned}{fourthPosition}";
 
-            string cleanRfc = rfcCleaner(rfc);
+            return rfc;
+        }
+
+        public string pSurnameLetters(string paternalSurname)
+        {
+            // Lista vacía que contendrá los caracteres seleccionados
+            List<char> selected = new List<char>();
+
+            //NOTA: Sí, se pudieron utilizar dos variables y luego concatenarlas, pero hay que practicar manejo de List y Arrays
+            char tempChar;
+
+            char[] allCharacters = paternalSurname.ToCharArray(); //Arreglo que contiene el apellido dividido en caracteres
+            for (int i = 0; i < allCharacters.Length; i++)
+            {
+                if (i == 0) //Si es la primer iteración...
+                {
+                    tempChar = allCharacters[i];
+
+                    if (tempChar == 'Ñ') //Si el caracter en primera posicion es 'ñ', sustituimos por 'x'
+                    {
+                        tempChar = 'X';
+                        selected.Add(tempChar);
+                        continue;
+                    }
+                    else
+                    {
+                        selected.Add(allCharacters[i]); //...agrega esa primer letra a la lista de seleccionados
+                        continue;
+                    }
+                }
+                else if (forbiddenVocals.Contains(allCharacters[i])) //No permite vocales con acento
+                {
+                    throw new Exception("Ningún campo puede contener letras con acentos o diéresis");
+                }
+                else if (vocals.Contains(allCharacters[i])) //Primer coincidencia de vocal en el apellido excluyendo la primer letra.
+                {
+                    selected.Add(allCharacters[i]);
+                    break; //Si llegamos a este punto ya tenemos la primer letra y la primer vocal, detenemos el For.
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            //Si no encontramos ninguna vocal interna en el apellido, agregamos una x en la segunda posición
+            if (selected.Count == 1)
+            {
+                selected.Add('X');
+            }
+
+            string selectedCharacters = string.Join("", selected); //Las letras seleccionadas, las juntamos en un string
+
+            return selectedCharacters;
+        }
+
+        public string mSurnameLetter(string maternalSurname)
+        {
+            if (maternalSurname != null)
+            {
+                char[] allCharacters = maternalSurname.ToCharArray();
+                string selected = allCharacters[0].ToString(); //Solo nos interesa la primer letra independientemente de si es vocal o consonante
+                AccentValidation(Convert.ToChar(selected));
+                selected = EnieValidation(selected);
+
+                return selected;
+            }
+            else //Si no hay segundo apellido (es null), retornamos "x".
+            {
+                return "X";
+            }
+        }
+
+        public string NameLetters(string name)
+        {
+            string[] names = name.Split(' ');
+
+            if (names.Length == 1) //Si solo hay un nombre, toma la primer letra del mismo independientemente del nombre que tenga (no aplica la lista forbiddenFirstNames)
+            {
+                char[] allCharacters = name.ToCharArray(); //Ya sabemos que solo es un nombre, utilizamos la variable pasada por parametro del método
+                string selected = allCharacters[0].ToString();
+
+                AccentValidation(Convert.ToChar(selected));
+                selected = EnieValidation(selected);
+
+                return selected;
+            }
+            else //Si hay mas de un nombre, revisamos que el primer nombre no esté en la lista de forbiddenFirstNames
+            {
+                if (forbiddenFirstNames.Contains(names[0])) //Si el primer nombre no está permitido...
+                {
+                    char[] allCharacters = names[1].ToCharArray(); //...tomamos el segundo nombre (independientemente de si hay mas de dos)
+                    string selected = allCharacters[0].ToString();
+                    AccentValidation(Convert.ToChar(selected));
+                    selected = EnieValidation(selected);
+
+                    return selected;
+                }
+                else
+                {
+                    char[] allCharacters = names[0].ToCharArray(); //...tomamos el segundo nombre (independientemente de si hay mas de dos)
+                    string selected = allCharacters[0].ToString();
+                    AccentValidation(Convert.ToChar(selected));
+                    selected = EnieValidation(selected);
+
+                    return selected;
+                }
+            }
+        }
+
+        public string Cleaner(string toClean) //Metodo para sustituir ("limpiar") el RFC de palabras inconvenientes
+        {
+            if (forbiddenWords.ContainsKey(toClean)) //Si existe alguna key en el diccionario de palabras prohibidas, que coincida con el RFC...
+            {
+                return forbiddenWords[toClean]; //...se sustituye por el valor asociado a dicha llave (la palabra correcta)
+            }
+            else
+            {
+                return toClean; //Si no hay nada que cambiar, devuelve la misma entrada
+            }
+        }
+
+        public string BirthdateNumbers(string birthDate)
+        {
+            return birthDate.Replace("-", ""); //Elimina los guiones del formato de la fecha
+        }
+
+        public void AccentValidation(char selected)
+        {
+            if (forbiddenVocals.Contains(selected)) //Si se encuentran coincidencias de letras con acentos, retorna error
+            {
+                throw new Exception("Ningún campo puede contener letras con acentos o diéresis");
+            }
+        }
+
+        public string EnieValidation(string selected) //Si una de las letras seleccioadas para el RFC es una "ñ", la sustituye por una "x"
+        {
+            if (selected == "Ñ")
+            {
+                selected = "X";
+            }
+            return selected;
         }
     }
 }

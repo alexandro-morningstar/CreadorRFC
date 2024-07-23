@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/CSS/Reset.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Scripts/bootstrap.js" rel="stylesheet" />
+    <link href="~/CSS/IndexStyles.css" rel="stylesheet" />
+    <title>RFCView</title>
+</head>
+<body>
+    <header>
+        <div id="messages" class="mt-2">
+            @if (@TempData["error"] != null)
+            {
+                <p class="alert alert-danger">@TempData["error"]</p>
+            }
+            @if (@TempData["success"] != null)
+            {
+                <p class="alert alert-success">@TempData["success"]</p>
+            }
+        </div>
+    </header>
+    <!--AGREGAR VISTA PARA VER EL RFC-->
+    <!--AGREGAR VISTA PARA VER TODOS LOS REGISTROS-->
+    <!--AGREGAR METODOS PARA TRAER TODOS LOS RGISTROS Y PERMITIR REPETIDOS MARCANDOLOS-->
+</body>
+</html>

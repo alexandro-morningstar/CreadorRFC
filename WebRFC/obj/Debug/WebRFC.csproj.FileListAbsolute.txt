@@ -80,3 +80,5 @@ C:\Users\Aleja\source\repos\SolRFC\WebRFC\bin\Business.dll
 C:\Users\Aleja\source\repos\SolRFC\WebRFC\bin\Entities.dll
 C:\Users\Aleja\source\repos\SolRFC\WebRFC\bin\Business.pdb
 C:\Users\Aleja\source\repos\SolRFC\WebRFC\bin\Entities.pdb
+C:\Users\Aleja\source\repos\SolRFC\WebRFC\bin\Data.dll
+C:\Users\Aleja\source\repos\SolRFC\WebRFC\bin\Data.pdb

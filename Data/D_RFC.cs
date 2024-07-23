@@ -27,7 +27,14 @@ namespace Data
 
                 command.Parameters.AddWithValue("@name", user.Name.ToUpper());
                 command.Parameters.AddWithValue("@paternalsurname", user.PaternalSurname.ToUpper());
-                command.Parameters.AddWithValue("@maternalsurname", user.MaternalSurname.ToUpper());
+                if (user.MaternalSurname != null)
+                {
+                    command.Parameters.AddWithValue("@maternalsurname", user.MaternalSurname.ToUpper());
+                }
+                else
+                {
+                    command.Parameters.AddWithValue("@maternalsurname", ' '); // Si el apellido materno es nulo, introducimos en blanco
+                }
                 command.Parameters.AddWithValue("@birthdate", user.BirthDate);
                 command.Parameters.AddWithValue("@rfc", rfc.ToUpper());
 

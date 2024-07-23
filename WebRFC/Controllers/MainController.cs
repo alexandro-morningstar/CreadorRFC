@@ -24,6 +24,18 @@ namespace WebRFC.Controllers
         public ActionResult Create(E_RFC user) //Crea un registro de usuario, en la capa negocio se genera el RFC
         {
             B_RFC creator =  new B_RFC(); //Objeto de la capa de negocio con las herramientas
+
+            try
+            {
+                creator.Create(user);
+                TempData["success"] = $"El RFC de {user.Name} se ha creado satisfactoriamente";
+                return View("RFCView", user);
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return View("GenerateView");
+            }
         }
     }
 }

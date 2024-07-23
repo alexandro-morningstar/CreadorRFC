@@ -10,6 +10,18 @@
     <title>Crear RFC</title>
 </head>
 <body>
+    <header>
+        <div id="messages" class="mt-2">
+            @if (@TempData["error"] != null)
+            {
+                <p class="alert alert-danger">@TempData["error"]</p>
+            }
+            @if (@TempData["success"] != null)
+            {
+                <p class="alert alert-success">@TempData["success"]</p>
+            }
+        </div>
+    </header>
     <main>
         <h2 class="mb-3">Ingresa los siguientes datos</h2>
         <form action="/Main/Create" method="post">
@@ -34,7 +46,7 @@
                     <label class="col-form-label" for="MaternalSurname">Apellido Materno:</label>
                 </div>
                 <div class="col-sm-8">
-                    <input class="form-control" type="text" name="MaternalSurname" placeholder="Escribe aqui tu segundo apellido." required />
+                    <input class="form-control" type="text" name="MaternalSurname" placeholder="Escribe aqui tu segundo apellido." />
                 </div>
             </div>
             <div class="mb-3 row align-items-center">
