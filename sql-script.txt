@@ -13,7 +13,7 @@ CREATE TABLE Users (
 -- MODIFICAR TIPO DE DATO
 ALTER TABLE Users ALTER COLUMN maternalSurname VARCHAR(100) NULL;
 
-CREATE PROCEDURE add_user
+CREATE OR ALTER PROCEDURE add_user
 	@name VARCHAR(100), @paternalsurname VARCHAR(100), @maternalsurname VARCHAR(100), @birthdate DATETIME, @rfc VARCHAR(50)
 	AS
 	BEGIN
@@ -28,13 +28,80 @@ ALTER PROCEDURE add_user
 		INSERT INTO Users(name,paternalSurname,maternalSurname,birthDate,rfc)
 		VALUES (@name,@paternalsurname,@maternalsurname,@birthdate,@rfc);
 	END;
+	
+EXECUTE add_user @name='SINUHE ALEJANDRO',@paternalsurname='GOMEZ',@maternalsurname='',@birthdate='1998-06-28',@rfc='GOHS980628';
 
+--Obtener todos los registros
 CREATE PROCEDURE get_all_users
 AS
 BEGIN
 SELECT idRFC,name,paternalSurname,maternalSurname,birthDate,rfc FROM Users;
 END;
 
-EXECUTE add_user @name='SINUHE ALEJANDRO',@paternalsurname='GOMEZ',@maternalsurname='',@birthdate='1998-06-28',@rfc='GOHS980628';
 
 EXECUTE get_all_users;
+
+--Obtener el ultimo registro
+CREATE PROCEDURE get_last_user
+AS BEGIN
+SELECT TOP 1 idRFC,name,paternalSurname,maternalSurname,birthDate,rfc FROM Users ORDER BY idRFC DESC;
+END;
+
+EXECUTE get_last_user;
+
+CREATE PROCEDURE get_last_rfc
+AS BEGIN
+SELECT TOP 1 rfc FROM Users ORDER BY idRFC DESC;
+END;
+
+EXECUTE get_last_rfc;
+
+
+--Obtener por coincidencia exacta (nombre(s), apellidos, fecha de nacimiento y meaby RFC)
+CREATE OR ALTER PROCEDURE get_repeated
+@name VARCHAR(100), @paternalsurname VARCHAR(100), @maternalsurname VARCHAR(100), @birthdate DATE, @rfc VARCHAR(50)
+AS BEGIN
+SELECT name,paternalSurname,maternalSurname,birthDate
+FROM Users
+WHERE name=@name AND paternalSurname=@paternalsurname AND maternalSurname=@maternalsurname AND birthDate=@birthdate AND rfc=@rfc;
+END;
+
+EXECUTE get_repeated @name='Sinuhe Alejandro', @paternalsurname='Gomez', @maternalsurname='Hernandez', @birthdate='1998-06-28', @rfc='GOHS980628';
+
+-- Eliminar registro por ID
+CREATE or ALTER PROCEDURE delete_by_id
+@id INT
+AS BEGIN
+DELETE FROM Users WHERE idRFC=@id;
+END;
+
+EXECUTE delete_by_id @id=3;
+
+--Obtener por ID
+CREATE OR ALTER PROCEDURE get_by_id
+@id INT
+AS BEGIN
+SELECT idRFC,name,paternalSurname,maternalSurname,birthDate,rfc FROM Users WHERE idRFC=@id;
+END;
+
+EXECUTE get_by_id @id=15;
+
+-- EDITAR REGISTRO --
+CREATE OR ALTER PROCEDURE edit_user
+@id INT, @name VARCHAR(100),@paternalsurname VARCHAR(100),@maternalsurname VARCHAR(100),@birthdate DATETIME,@rfc VARCHAR(50)
+AS BEGIN
+UPDATE Users SET name=@name,paternalSurname=@paternalsurname,maternalSurname=@maternalsurname,birthDate=@birthdate,rfc=@rfc WHERE idRFC=@id;
+END;
+
+EXECUTE edit_user @id=4, @name='Alejandro', @paternalsurname='Gomez',@maternalsurname='Hernandez',@birthdate='1998-06-28',@rfc='GOHA980628';
+
+-- Busqueda por texto o numeros
+CREATE OR ALTER PROCEDURE search
+@text VARCHAR(100)
+AS BEGIN
+SELECT idRFC,name,paternalSurname,maternalSurname,birthDate,rfc
+FROM Users
+WHERE idRFC LIKE '%'+@text+'%' OR name LIKE '%'+@text+'%' OR paternalSurname LIKE '%'+@text+'%' OR maternalSurname LIKE '%'+@text+'%' OR birthDate LIKE '%'+@text+'%' OR rfc LIKE '%'+@text+'%';
+END;
+
+execute search @text='52'

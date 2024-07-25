@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Data;
@@ -11,6 +12,9 @@ namespace Business
 {
     public class B_RFC
     {
+
+        /*------------------------------ NUEVOS REGISTROS ------------------------------*/
+
         List<char> vocals = new List<char> { 'A', 'E', 'I', 'O', 'U' }; //Lista de vocales para comparar existencia
         List<char> forbiddenVocals = new List<char> { 'Á', 'É', 'Í', 'Ó', 'Ú' }; //Lista de vocales prohibidas (con acento)
         List<string> forbiddenFirstNames = new List<string> { "MARIA", "MA", "MA.", "JOSE", "J", "J." }; //Lista de primeros nombres prohibidos
@@ -32,8 +36,21 @@ namespace Business
 
             try
             {
+                //Primero: generar RFC
                 string rfc = GenerateRFC(user);
-                userCreator.CreateUser(user, rfc);
+
+                //Segundo: Verificar si está repetido el usuario
+                bool isRepeated = userCreator.GetRepeatedUser(user, rfc);
+                if (isRepeated == false)
+                {
+                    //Tercero: Crear el usuario
+                    userCreator.CreateUser(user, rfc);
+                }
+                else
+                {
+                    rfc = rfc + "*";
+                    userCreator.CreateUser(user, rfc);
+                }
             }
             catch (Exception ex)
             {
@@ -46,15 +63,16 @@ namespace Business
         {
             string paternalSurname = user.PaternalSurname.ToUpper(); //Desde aqui convertimos todo a mayusculas para facilitar la manipulación de datos (comparaciones y asginaciones)
             string maternalSurname = user.MaternalSurname;
-            if (user.MaternalSurname != null)
-            {
-                maternalSurname = user.MaternalSurname.ToUpper();
-            }
             string name = user.Name.ToUpper();
             string birthDate = user.BirthDate.ToString("yy-MM-dd");
 
-            //TRATAR LOS DATOS PARA GENERAR EL RFC
-            // Un metodo para sacar cada parte del RFC
+            //Comprobaciones antes de tratar los datos
+            paternalSurname = BlankSpacesValidation(paternalSurname); //Si hay espacios en blanco al inicio o al final, los eliminará.
+            maternalSurname = BlankSpacesValidation(maternalSurname);
+            name = BlankSpacesValidation(name);
+            maternalSurname = NullValidation(maternalSurname); //Si no es null, convertimos a mayuculas.
+
+            //TRATAR LOS DATOS PARA GENERAR EL RFC (Un metodo para sacar cada parte del RFC)
             string firstPosition = pSurnameLetters(paternalSurname); //Primer apellido: primer letra y primer vocal interna.
             string secondPosition = mSurnameLetter(maternalSurname); //Segundo apellido: primer letra
             string thirdPosition = NameLetters(name); //Si son dos nombres, partir la cadena en subcadenas, split por espacios
@@ -209,6 +227,152 @@ namespace Business
                 selected = "X";
             }
             return selected;
+        }
+
+        public string BlankSpacesValidation(string field)
+        {
+            return field.Trim();
+        }
+
+        public string NullValidation(string maternalSurname)
+        {
+            if (maternalSurname != null)
+            {
+                return maternalSurname.ToUpper();
+            }
+            else
+            {
+                return maternalSurname;
+            }
+        }
+
+        /*------------------------------ RETORNO DE ULTIMO REGISTRO ------------------------------*/
+
+        public string GetLastRFC()
+        {
+            D_RFC getRfc = new D_RFC();
+
+            try
+            {
+                string rfc = getRfc.GetLastRFC();
+                return rfc;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /*------------------------------ RETORNO DE TODOS LOS REGISTROS ------------------------------*/
+
+        public List<E_RFC> GetAllUsers()
+        {
+            D_RFC getall = new D_RFC();
+
+            try
+            {
+                List<E_RFC> users = getall.GetAllUsers();
+                return users;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public int CountUsers()
+        {
+            D_RFC counter = new D_RFC();
+
+            try
+            {
+                int count = counter.CountUsers();
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /*------------------------------ RETORNO DE UN SOLO REGISTRO POR ID ------------------------------*/
+
+        public E_RFC GetByID(int id)
+        {
+            D_RFC getuser = new D_RFC();
+            try
+            {
+                E_RFC user = getuser.GetByID(id);
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /*------------------------------ ELIMINAR UN REGISTRO POR ID ------------------------------*/
+        public void DeleteById(int id)
+        {
+            D_RFC deleter = new D_RFC();
+
+            try
+            {
+                deleter.DeleteById(id);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /*------------------------------ ELIMINAR UN REGISTRO POR ID ------------------------------*/
+        public void Edit(E_RFC user)
+        {
+            D_RFC userEditor = new D_RFC();
+
+            try
+            {
+                string rfc = GenerateRFC(user);
+
+                bool isRepeated = userEditor.GetRepeatedUser(user, rfc);
+
+                if (isRepeated == false)
+                {
+                    userEditor.Edit(user, rfc);
+                }
+                else
+                {
+                    rfc = rfc + "*";
+                    userEditor.Edit(user, rfc);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+
+        /*------------------------------ BUSCAR REGISTROS POR COINCIDENCIA DE TEXTO ------------------------------*/
+
+        public List<E_RFC> Search(string text)
+        {
+            D_RFC searcher = new D_RFC();
+            List<E_RFC> users = new List<E_RFC>();
+
+            text = text.Trim();
+
+            try
+            {
+                users = searcher.Search(text);
+                return users;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
