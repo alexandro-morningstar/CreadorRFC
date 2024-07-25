@@ -104,6 +104,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="CSS\AlexandrosStyles.css" />
     <Content Include="CSS\EditStyles.css" />
     <Content Include="CSS\IndexStyles.css" />
     <Content Include="CSS\RecordsStyles.css" />
@@ -156,6 +157,7 @@
     <Content Include="Views\Main\RecordView.cshtml" />
     <Content Include="Views\Main\EditView.cshtml" />
     <Content Include="Views\Main\DeleteView.cshtml" />
+    <Content Include="Views\Main\AlexandrosView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
