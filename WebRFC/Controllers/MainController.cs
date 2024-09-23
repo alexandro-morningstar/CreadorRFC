@@ -56,11 +56,11 @@ namespace WebRFC.Controllers
         public ActionResult GoToRecords()
         {
             List<E_RFC> records = new List<E_RFC>();
+            B_RFC businessTool = new B_RFC();
             int count;
 
             try
             {
-                B_RFC businessTool = new B_RFC();
                 records = businessTool.GetAllUsers();
                 count = businessTool.CountUsers();
                 ViewData["userscount"] = $"Existen {count} registros en la base de datos.";
@@ -77,10 +77,13 @@ namespace WebRFC.Controllers
         {
             B_RFC searcher = new B_RFC();
             List<E_RFC> users = new List<E_RFC>();
+            int count;
 
             try
             {
                 users = searcher.Search(text);
+                count = searcher.CountUsers();
+                ViewData["userscount"] = $"Existen {count} registros en la base de datos.";
                 return View("RecordView", users);
             }
             catch (Exception ex)

@@ -67,7 +67,15 @@ namespace Data
 
                 command.Parameters.AddWithValue("@name", user.Name);
                 command.Parameters.AddWithValue("paternalsurname", user.PaternalSurname);
-                command.Parameters.AddWithValue("@maternalsurname", user.MaternalSurname);
+                if (user.MaternalSurname != null)
+                {
+
+                    command.Parameters.AddWithValue("@maternalsurname", user.MaternalSurname);
+                }
+                else
+                {
+                    command.Parameters.AddWithValue("@maternalsurname", ' ');
+                }
                 command.Parameters.AddWithValue("@birthdate", user.BirthDate);
                 command.Parameters.AddWithValue("@rfc", rfc);
 

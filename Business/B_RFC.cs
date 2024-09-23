@@ -68,7 +68,10 @@ namespace Business
 
             //Comprobaciones antes de tratar los datos
             paternalSurname = BlankSpacesValidation(paternalSurname); //Si hay espacios en blanco al inicio o al final, los eliminará.
-            maternalSurname = BlankSpacesValidation(maternalSurname);
+            if (maternalSurname != null)
+            {
+                maternalSurname = BlankSpacesValidation(maternalSurname);
+            }
             name = BlankSpacesValidation(name);
             maternalSurname = NullValidation(maternalSurname); //Si no es null, convertimos a mayuculas.
 
